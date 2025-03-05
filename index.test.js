@@ -1,9 +1,6 @@
-const {sequelize} = require('./db')
+const { db } = require('./db')
 const {Restaurant, Menu} = require('./models/index')
-const {
-    seedRestaurant,
-    seedMenu,
-  } = require('./seedData');
+const { seedRestaurant,  seedMenu, } = require('./seedData');
 
 describe('Restaurant and Menu Models', () => {
     /**
@@ -13,31 +10,48 @@ describe('Restaurant and Menu Models', () => {
         // the 'sync' method will create tables based on the model class
         // by setting 'force:true' the tables are recreated each time the 
         // test suite is run
-        await sequelize.sync({ force: true });
+        await db.sync({ force: true });
     });
 
     test('can create a Restaurant', async () => {
-        // TODO - write test
-        expect('NO TEST').toEqual('EXPECTED DATA')
+        const restaurant = await Restaurant.create(
+            {
+                name: "Saltgrass",
+                location: "Houston",
+                cuisine: "Steakhouse"
+            }
+        );
+        expect(restaurant.name).toBe("Saltgrass");
     });
 
     test('can create a Menu', async () => {
-        // TODO - write test
-        expect('NO TEST').toEqual('EXPECTED DATA')
+        const menu = await Menu.create(
+            { title: "Wines" }
+        );
+        expect(menu.title).toBe("Wines")
     });
 
-    test('can find Restaurants', async () => {
-        // TODO - write test
-        expect('NO TEST').toEqual('EXPECTED DATA')
+    test('can update a Restaurant', async () => {
+        await Restaurant.update(
+            { location: "The Woodlands" },
+            { where: {id: 1}}
+        );
+        const updatedRestaurant = await Restaurant.findByPk(1);
+        expect(updatedRestaurant.location).toBe("The Woodlands"); 
     });
 
-    test('can find Menus', async () => {
-        // TODO - write test
-        expect('NO TEST').toEqual('EXPECTED DATA')
+    test('can update a Menu', async () => {
+        await Menu.update(
+            { title: "Steaks" },
+            { where: {id: 1}}
+        );
+        const updatedMenu = await Menu.findByPk(1);
+        expect(updatedMenu.title).toBe("Steaks");
     });
 
-    test('can delete Restaurants', async () => {
-        // TODO - write test
-        expect('NO TEST').toEqual('EXPECTED DATA')
+    test('can delete a Restaurants', async () => {
+        await Restaurant.destroy({ where: {id: 1}});
+        const restaurants = await Restaurant.findAll();
+        expect(restaurants.length).toBe(0);
     });
-})
+});
