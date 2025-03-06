@@ -1,5 +1,5 @@
 const { db } = require('./db')
-const {Restaurant, Menu} = require('./models/index')
+const { Restaurant, Menu, Item } = require('./models/index')
 const { seedRestaurant,  seedMenu, } = require('./seedData');
 
 describe('Restaurant and Menu Models', () => {
@@ -54,4 +54,23 @@ describe('Restaurant and Menu Models', () => {
         const restaurants = await Restaurant.findAll();
         expect(restaurants.length).toBe(0);
     });
+
+    test('can create an Item and associate it with a Menu', async () => {
+        const menu = await Menu.create({ title: "Dinner" });
+        const item = await Item.create({
+          name: "Ribeye",
+          image: "img.png",
+          price: 50,
+          vegetarian: false,
+        });
+    
+        await menu.addItem(item);
+    
+        const menuWithItem = await Menu.findByPk(menu.id, {
+          include: Item,
+        });
+    
+        expect(menuWithItem.Items.length).toBe(1);
+        expect(menuWithItem.Items[0].name).toBe("Ribeye");
+      });
 });
